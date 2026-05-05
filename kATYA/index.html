@@ -1,0 +1,458 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
+  <title>Дело № 3 · Екатерина Пашкова</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      background: #0c0b0a;
+      background-image: radial-gradient(rgba(180, 160, 120, 0.08) 1px, transparent 1px);
+      background-size: 40px 40px;
+      font-family: 'IBM Plex Mono', 'Courier New', 'Consolas', monospace;
+      color: #d9cdb3;
+      padding: 2rem 1.5rem;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      position: relative;
+    }
+
+    /* Эффект старой бумаги / тусклого света */
+    body::before {
+      content: "";
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: radial-gradient(ellipse at 20% 20%, rgba(70, 50, 30, 0.25) 0%, transparent 60%),
+                  radial-gradient(ellipse at 80% 80%, rgba(40, 50, 40, 0.15) 0%, transparent 60%);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .case-board {
+      max-width: 950px;
+      width: 100%;
+      background: rgba(20, 18, 15, 0.8);
+      backdrop-filter: blur(12px);
+      border: 1px solid #5e513a;
+      box-shadow: 0 20px 50px rgba(0,0,0,0.7), inset 0 0 30px rgba(160, 120, 60, 0.15);
+      padding: 2.2rem 2.5rem;
+      position: relative;
+      z-index: 2;
+      border-radius: 2px;
+      display: flex;
+      flex-direction: column;
+      gap: 2.2rem;
+    }
+
+    /* Декоративные уголки */
+    .case-board::before,
+    .case-board::after {
+      content: "✢";
+      position: absolute;
+      color: #b89b6b;
+      font-size: 1.8rem;
+      opacity: 0.7;
+      text-shadow: 0 0 8px #6b4e2e;
+    }
+    .case-board::before {
+      top: -12px;
+      left: 15px;
+    }
+    .case-board::after {
+      bottom: -12px;
+      right: 15px;
+      transform: rotate(180deg);
+    }
+
+    /* Заголовок дела */
+    .case-header {
+      border-bottom: 2px dashed #6b5a3e;
+      padding-bottom: 1.2rem;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: baseline;
+    }
+
+    .case-id {
+      font-size: 1.6rem;
+      font-weight: 600;
+      letter-spacing: 3px;
+      color: #c7af7c;
+      text-transform: uppercase;
+      background: #1e1a14;
+      padding: 0.2rem 1rem;
+      border: 1px solid #5e4e32;
+      border-radius: 2px;
+      box-shadow: 0 0 12px rgba(180, 140, 70, 0.3);
+    }
+
+    .stamp {
+      font-size: 0.9rem;
+      color: #7a6a4b;
+      border: 1px solid #4a3d2a;
+      padding: 0.3rem 1rem;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      transform: rotate(-1deg);
+      background: rgba(30, 25, 18, 0.8);
+    }
+
+    h1 {
+      font-size: 2.5rem;
+      font-weight: 400;
+      text-transform: uppercase;
+      letter-spacing: 5px;
+      color: #e4d5b7;
+      text-shadow: 0 0 15px #5f4a2e;
+      margin-top: 0.3rem;
+      width: 100%;
+      line-height: 1.2;
+      font-family: 'Times New Roman', 'Georgia', serif;
+    }
+
+    .subtitle {
+      font-size: 1rem;
+      color: #a3926b;
+      letter-spacing: 2px;
+      margin-top: 0.2rem;
+    }
+
+    /* Сетка досье */
+    .dossier-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.8rem 2.5rem;
+    }
+
+    .profile-photo-area {
+      grid-column: span 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      border: 1px solid #5f5036;
+      background: #18140e;
+      padding: 1.2rem;
+      border-radius: 2px;
+      box-shadow: inset 0 0 25px #00000070;
+    }
+
+    .photo-placeholder {
+      width: 100%;
+      aspect-ratio: 1 / 1.2;
+      background: #1f1a11;
+      border: 1px dashed #8b7a5c;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      color: #5c4f37;
+      font-size: 0.8rem;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      margin-bottom: 0.8rem;
+      background-image: linear-gradient(45deg, #2a2419 2%, transparent 5%);
+      position: relative;
+    }
+
+    .photo-placeholder::before {
+      content: "📷";
+      font-size: 2.5rem;
+      opacity: 0.5;
+      margin-bottom: 0.5rem;
+    }
+
+    .photo-caption {
+      font-size: 0.7rem;
+      color: #6b5d42;
+      border-top: 1px solid #3a3322;
+      padding-top: 0.4rem;
+      width: 100%;
+      text-align: center;
+    }
+
+    .info-cluster {
+      display: flex;
+      flex-direction: column;
+      gap: 1.2rem;
+    }
+
+    .field {
+      border-left: 3px solid #7a623f;
+      padding-left: 1rem;
+      background: rgba(12, 10, 7, 0.5);
+    }
+
+    .field-label {
+      font-size: 0.7rem;
+      letter-spacing: 2px;
+      color: #ad925f;
+      text-transform: uppercase;
+      margin-bottom: 0.3rem;
+    }
+
+    .field-value {
+      font-size: 1.1rem;
+      color: #f0e3c9;
+      font-weight: 500;
+      word-break: break-word;
+      background: #1f1a11;
+      padding: 0.3rem 0.6rem;
+      border-radius: 2px;
+      min-height: 2rem;
+    }
+
+    .redacted {
+      color: #b45f4c;
+      font-style: italic;
+      background: #1e1310;
+    }
+
+    /* Раздел связей / улик */
+    .evidence-board {
+      margin-top: 0.8rem;
+      border: 1px solid #4a3c27;
+      background: #110e09;
+      padding: 1.2rem 1.5rem;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1.5rem;
+      align-items: center;
+      justify-content: space-between;
+      position: relative;
+    }
+
+    .connections {
+      display: flex;
+      gap: 2rem;
+      flex-wrap: wrap;
+    }
+
+    .connection-item {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+    }
+
+    .pin {
+      width: 10px;
+      height: 10px;
+      background: #9e7a4b;
+      border-radius: 50%;
+      box-shadow: 0 0 12px #daa520;
+    }
+
+    .red-string {
+      width: 40px;
+      height: 1px;
+      background: #a1543a;
+      box-shadow: 0 0 8px red;
+      transform: rotate(0deg);
+    }
+
+    .conn-text {
+      font-size: 0.9rem;
+      color: #cbae7a;
+    }
+
+    .classified-stamp {
+      font-size: 1.2rem;
+      color: #b03e2c;
+      border: 2px solid #b03e2c;
+      padding: 0.3rem 1.2rem;
+      transform: rotate(-5deg);
+      font-weight: bold;
+      letter-spacing: 3px;
+      opacity: 0.8;
+    }
+
+    .notes-section {
+      background: #1a150f;
+      border: 1px dashed #6b5a38;
+      padding: 1rem 1.5rem;
+      margin-top: 0.5rem;
+      font-size: 0.9rem;
+      color: #bfaa7a;
+      font-style: italic;
+      display: flex;
+      align-items: flex-start;
+      gap: 0.8rem;
+    }
+
+    .notes-icon {
+      font-size: 1.4rem;
+    }
+
+    /* Адаптив */
+    @media (max-width: 650px) {
+      .dossier-grid {
+        grid-template-columns: 1fr;
+      }
+      body {
+        padding: 1rem;
+      }
+      .case-board {
+        padding: 1.5rem;
+      }
+      h1 {
+        font-size: 1.8rem;
+      }
+    }
+
+    /* Подвал */
+    .footer-details {
+      display: flex;
+      justify-content: space-between;
+      color: #5b4d33;
+      font-size: 0.7rem;
+      border-top: 1px dotted #4a3f2b;
+      padding-top: 1rem;
+      letter-spacing: 1px;
+    }
+  </style>
+</head>
+<body>
+  <div class="case-board">
+    
+    <!-- Шапка: номер дела и гриф -->
+    <div class="case-header">
+      <span class="case-id">ДЕЛО № 3</span>
+      <span class="stamp">📋 конфиденциально</span>
+      <h1>Екатерина Пашкова</h1>
+      <div class="subtitle">◆ объект наблюдения · досье активно ◆</div>
+    </div>
+
+    <!-- Основная сетка: фото и ключевые данные -->
+    <div class="dossier-grid">
+      
+      <!-- БЛОК ФОТОГРАФИИ: ЗАМЕНИТЬ ИЗОБРАЖЕНИЕ ПО ЖЕЛАНИЮ -->
+      <div class="profile-photo-area">
+        <div class="photo-placeholder">
+          <!-- ЗАПОЛНИТЬ: ВСТАВЬТЕ ФОТО ЕКАТЕРИНЫ ПАШКОВОЙ -->
+          <img src="Pictures/photo_2026-05-05_21-16-07.jpg" alt="Екатерина Пашкова" style="width:100%; height:100%; object-fit:cover;">
+          <span style="font-size:0.75rem; margin-top:0.3rem;"></span>
+        </div>
+        <div class="photo-caption">● субъект «К.П.» ● последнее обновление: сегодня</div>
+      </div>
+
+      <!-- ПРАВЫЙ БЛОК: ОСНОВНАЯ ИНФОРМАЦИЯ (ЗАПОЛНИТЬ ДАННЫЕ) -->
+      <div class="info-cluster">
+        <div class="field">
+          <div class="field-label">📌 Полное имя / псевдоним</div>
+          <!-- ЗАПОЛНИТЬ: Имя и возможные псевдонимы -->
+          <div class="field-value">Екатерина Пашкова (Осокина)</div>
+        </div>
+        <div class="field">
+          <div class="field-label">📅 Дата рождения / возраст</div>
+          <!-- ЗАПОЛНИТЬ: Дата рождения, возраст -->
+          <div class="field-value">18.11.2005, 20 лет</div>
+        </div>
+        <div class="field">
+          <div class="field-label">📍 Место жительства / регион</div>
+          <!-- ЗАПОЛНИТЬ: Город, район, страна -->
+          <div class="field-value">КУРСКАЯ ОБЛ, Г КУРСК, УЛ 50 ЛЕТ ОКТЯБРЯ, Д. 167/3, ПОМ. 30,167/3, ПОМ. 30</div>
+        </div>
+        <div class="field">
+          <div class="field-label">⚡ Род деятельности</div>
+          <!-- ЗАПОЛНИТЬ: Профессия, увлечения, статус -->
+          <div class="field-value">Маляр</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ВТОРОЙ РЯД: ДОПОЛНИТЕЛЬНЫЕ ДАННЫЕ, КОТОРЫЕ НУЖНО ЗАПОЛНИТЬ -->
+    <div class="dossier-grid" style="margin-top: 0.3rem;">
+      <div class="field">
+        <div class="field-label">🔍 Мать Екатерины</div>
+        <!-- ЗАПОЛНИТЬ: Образование, сертификаты, умения -->
+        <div class="field-value">Пашкова Елена Владимировна 10.12.1974</div>
+      </div>
+      <div class="field">
+        <div class="field-label">📞 Контактные данные </div>
+        <!-- ЗАПОЛНИТЬ: Телефон, email, соцсети (можно оставить засекреченным) -->
+        <div class="field-value redacted">ВК	https://vk.com/id583791427<br>
+          Telegram	https://t.me/Dodijxjsns<br>
+          MAX	https://max.me/+79191332191<br>
+          Whatsapp	https://wa.me/+79191332191<br>
+          Email ENOTIK0000000@GMAIL.COM PASHKOVAEKATERINA000@GMAIL.COM
+
+        </div>
+      </div>
+      <div class="field">
+        <div class="field-label">🧬 Паспортные данные</div>
+        <!-- ЗАПОЛНИТЬ: Хобби, внешние черты, стиль -->
+        <div class="field-value">Серия и номер: 3819272007<br>
+          СНИЛС: 19066959115<br>
+          ИНН: 463255927195
+        </div>
+      </div>
+      <div class="field">
+        <div class="field-label">📂 Екатерина в телефонных книгах</div>
+        <!-- ЗАПОЛНИТЬ: Родственники, коллеги, важные персоны -->
+        <div class="field-value">ПАШКОВА ЕКАТЕРИНА АНДРЕЕВНА ПАШКОВА ЕКАТЕРИНА АНДРЕЕВА Ekaterina Malinovskaya Броу Доченька Екатерина Екатерина Андреевна П. екатерина махорин Екатерина Пашкова Зайка❤️ Катер Катя Катя 👼 Катя Левая Катя М Катя Малинка Катя Пашкова Катя Подруга Студенческая Катя Цп Катя. Юрикова Катя🍼 любимая Любовь моя Мой номер Номер Серый Мазда Шмара</div>
+      </div>
+    </div>
+
+    <!-- БЛОК "УЛИКИ И СВЯЗИ" (ВИЗУАЛЬНАЯ ДЕТЕКТИВНАЯ ДОСКА) -->
+    <div class="evidence-board">
+      <div class="connections">
+        <div class="connection-item">
+          <span class="pin"></span>
+          <span class="conn-text">📁 Личное дело</span>
+          <span class="red-string"></span>
+        </div>
+        <div class="connection-item">
+          <span class="pin"></span>
+          <span class="conn-text">📸 Архив фото</span>
+          <span class="red-string"></span>
+        </div>
+        <div class="connection-item">
+          <span class="pin"></span>
+          <span class="conn-text">🔗 Проект "Феникс"</span>
+        </div>
+      </div>
+      <div class="classified-stamp">ДОПУСК ОГРАНИЧЕН</div>
+    </div>
+
+    <!-- ПОЛЕ ДЛЯ ДЕТЕКТИВНЫХ ЗАМЕТОК (СВОБОДНЫЙ ТЕКСТ) -->
+    <div class="notes-section">
+      <span class="notes-icon">🕵️</span>
+      <div>
+        <strong>Заметки следователя:</strong> 
+        <!-- ЗАПОЛНИТЬ: ЛЮБАЯ ДОПОЛНИТЕЛЬНАЯ ИНФОРМАЦИЯ, ОПИСАНИЕ ХАРАКТЕРА, ИСТОРИЯ -->
+        <span style="color:#cfb27c;"> Шлюха какая-то, нашел информацию о том, что она еще и в казино часто играет и туда сливает кучу денег, ни слова про ребенка не нашел, есть ли уверенность что он вообще есть?</span>
+      </div>
+    </div>
+
+    <!-- ПОДВАЛ: СТАТУС РАССЛЕДОВАНИЯ -->
+    <div class="footer-details">
+      <span>📅 обновлено: 05.05.2026</span>
+      <span>🔒 статус: активно</span>
+      <span>📋 следователь: инспектор Пес</span>
+    </div>
+
+    <!-- 
+      ==========================================
+      МЕСТА ДЛЯ ЗАПОЛНЕНИЯ ИНФОРМАЦИИ:
+      1. Фото (можно заменить div.photo-placeholder на img)
+      2. Все поля с классом field-value (имя, дата, город, деятельность)
+      3. Навыки, контакты, особые приметы, связанные лица
+      4. Текстовый блок "Заметки следователя"
+      5. При желании изменить данные в подвале (дата, следователь)
+      ==========================================
+    -->
+  </div>
+</body>
+</html>
